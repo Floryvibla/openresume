@@ -16,12 +16,10 @@ type Props = {
   onSaved: (nextResume: ResumeDocument) => void;
   resume: ResumeDocument;
   resumeId?: string;
-  title: string;
 };
 
-export function ResumeEditorForm({ onSaved, resume, resumeId, title }: Props) {
+export function ResumeEditorForm({ onSaved, resume, resumeId }: Props) {
   const [draftResume, setDraftResume] = useState(resume);
-  const [draftTitle, setDraftTitle] = useState(title);
   const {
     value: isSaving,
     setFalse: stopSaving,
@@ -47,40 +45,32 @@ export function ResumeEditorForm({ onSaved, resume, resumeId, title }: Props) {
       await apiClient.patch(`/api/resumes/${resumeId}`, {
         documentJson: draftResume,
         themeKey: draftResume.theme,
-        title: draftTitle,
+        title: draftResume.basics.fullName,
       });
     } finally {
       stopSaving();
     }
   }
 
-  const saveButton = (
-    <Button disabled={!resumeId || isSaving} type="submit">
+  const saveButton = resumeId ? (
+    <Button disabled={isSaving} type="submit">
       {isSaving ? <Spinner data-icon="inline-start" /> : null}
-      {resumeId ? "Salvar alteracoes" : "Pronto para salvar no workspace"}
+      Salvar alteracoes
     </Button>
-  );
+  ) : null;
 
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
-        <ResumeEditorPreferences
-          language={draftResume.language}
-          onLanguageChange={(language) => updateResume({ language })}
-          onThemeChange={(theme) => updateResume({ theme })}
-          onVisibleSectionsChange={(visibleSections) =>
-            updateResume({ visibleSections })
-          }
-          theme={draftResume.theme}
-          visibleSections={draftResume.visibleSections}
-        />
-        {saveButton}
-      </div>
+      {saveButton}
+      <ResumeEditorPreferences
+        language={draftResume.language}
+        onLanguageChange={(language) => updateResume({ language })}
+        onThemeChange={(theme) => updateResume({ theme })}
+        theme={draftResume.theme}
+      />
       <ResumeBasicsFields
         basics={draftResume.basics}
         onBasicsChange={(basics) => updateResume({ basics })}
-        onTitleChange={setDraftTitle}
-        title={draftTitle}
       />
       <ResumeEditorSections onChange={updateResume} resume={draftResume} />
       {saveButton}

@@ -15,7 +15,7 @@ type Props = {
   period: string;
 };
 
-export function ResumeExperiencePeriod({ id, onChange, period }: Props) {
+export function ResumePeriodFields({ id, onChange, period }: Props) {
   const parts = parseResumePeriod(period);
 
   function updateParts(partial: Partial<ResumePeriodParts>) {
@@ -26,19 +26,19 @@ export function ResumeExperiencePeriod({ id, onChange, period }: Props) {
     <>
       <div className="grid gap-4 md:grid-cols-2">
         <Field>
-          <FieldLabel htmlFor={`experience-start-${id}`}>Inicio</FieldLabel>
+          <FieldLabel htmlFor={`period-start-${id}`}>Início</FieldLabel>
           <Input
-            id={`experience-start-${id}`}
+            id={`period-start-${id}`}
             onChange={(event) => updateParts({ start: event.target.value })}
             placeholder="MM/AAAA"
             value={parts.start}
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor={`experience-end-${id}`}>Fim</FieldLabel>
+          <FieldLabel htmlFor={`period-end-${id}`}>Fim</FieldLabel>
           <Input
             disabled={parts.isCurrent}
-            id={`experience-end-${id}`}
+            id={`period-end-${id}`}
             onChange={(event) => updateParts({ end: event.target.value })}
             placeholder="MM/AAAA"
             value={parts.isCurrent ? "" : parts.end}

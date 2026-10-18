@@ -3,7 +3,13 @@ import { getResumeCopy } from "@/features/resume/ui/resume-copy";
 
 type ResumePageBlock = {
   items?: string[];
-  key: "summary" | "experiences" | "education" | "skills" | "certifications";
+  key:
+    | "summary"
+    | "experiences"
+    | "education"
+    | "skills"
+    | "certifications"
+    | "languages";
   text?: string;
   title: string;
 };
@@ -93,6 +99,15 @@ export function buildResumePages(resume: ResumeDocument) {
       items: resume.certifications.map((item) => item.id),
       key: "certifications",
       title: copy.certifications,
+    }, cost);
+  }
+
+  if (resume.visibleSections.languages && resume.languages.length) {
+    const cost = 14 + resume.languages.length * 8;
+    pushBlock({
+      items: resume.languages.map((item) => item.id),
+      key: "languages",
+      title: copy.languages,
     }, cost);
   }
 

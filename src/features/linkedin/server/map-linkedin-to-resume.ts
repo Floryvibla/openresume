@@ -87,6 +87,7 @@ export function mapLinkedinToResume(
       education: true,
       skills: true,
       certifications: true,
+      languages: true,
     },
     generatedAt: {
       label: new Date().toLocaleDateString("pt-BR"),
@@ -106,6 +107,7 @@ export function mapLinkedinToResume(
       issuer: item.authority ?? "Autoridade nao informada",
       period: formatPeriod(item.timePeriod),
     })),
+    languages: [],
   };
 
   return resumeDocumentSchema.parse(resumeDocument);

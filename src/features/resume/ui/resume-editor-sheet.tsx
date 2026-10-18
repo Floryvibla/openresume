@@ -16,7 +16,6 @@ type Props = {
   onSaved: (nextResume: ResumeDocument) => void;
   resume: ResumeDocument;
   resumeId?: string;
-  title: string;
 };
 
 export function ResumeEditorSheet({
@@ -25,7 +24,6 @@ export function ResumeEditorSheet({
   onSaved,
   resume,
   resumeId,
-  title,
 }: Props) {
   return (
     <Sheet onOpenChange={onOpenChange} open={isOpen}>
@@ -41,7 +39,6 @@ export function ResumeEditorSheet({
             onSaved={onSaved}
             resume={resume}
             resumeId={resumeId}
-            title={title}
           />
         </div>
       </SheetContent>

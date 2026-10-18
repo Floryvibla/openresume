@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import { DownloadIcon, RefreshCwIcon, SquarePenIcon } from "lucide-react";
 import { useBoolean } from "usehooks-ts";
 
@@ -15,7 +13,6 @@ type Props = {
   onEditClick: () => void;
   onRefreshClick: () => void;
   resume: ResumeDocument;
-  resumeId?: string;
 };
 
 export function ResumeActions({
@@ -23,41 +20,13 @@ export function ResumeActions({
   onEditClick,
   onRefreshClick,
   resume,
-  resumeId,
 }: Props) {
-  const router = useRouter();
   const {
     value: isSaving,
     setTrue: startSaving,
     setFalse: stopSaving,
   } = useBoolean(false);
   const isBusy = isSaving || isRefreshing;
-
-  async function ensureResumeId() {
-    if (resumeId) {
-      return resumeId;
-    }
-
-    const response = await apiClient.post("/api/resumes", {
-      documentJson: resume,
-      themeKey: resume.theme,
-      title: resume.basics.fullName,
-    });
-
-    return response.data.id as string;
-  }
-
-  async function handleSave() {
-    startSaving();
-
-    try {
-      const persistedResumeId = await ensureResumeId();
-      router.push(`/dashboard?resumeId=${persistedResumeId}`);
-      router.refresh();
-    } finally {
-      stopSaving();
-    }
-  }
 
   async function handleDownload() {
     startSaving();
@@ -116,9 +85,6 @@ export function ResumeActions({
         )}
         Atualizar com LinkedIn
       </Button>
-      {/* <Button disabled={isSaving} onClick={handleSave} type="button" variant="outline">
-        Salvar no workspace
-      </Button> */}
     </div>
   );
 }

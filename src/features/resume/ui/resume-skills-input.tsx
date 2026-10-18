@@ -54,6 +54,18 @@ export function ResumeSkillsInput({ onChange, value }: Props) {
   return (
     <Field>
       <FieldLabel htmlFor="resume-skills">Skills</FieldLabel>
+      <FieldDescription>
+        Digite e pressione Enter para adicionar. Clique no X para remover.
+      </FieldDescription>
+      <Input
+        className="h-10"
+        id="resume-skills"
+        onBlur={() => addSkill(draftSkill)}
+        onChange={(event) => setDraftSkill(event.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Digite uma skill e pressione Enter"
+        value={draftSkill}
+      />
       {value.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {value.map((skill) => (
@@ -71,17 +83,6 @@ export function ResumeSkillsInput({ onChange, value }: Props) {
           ))}
         </div>
       ) : null}
-      <Input
-        id="resume-skills"
-        onBlur={() => addSkill(draftSkill)}
-        onChange={(event) => setDraftSkill(event.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Digite uma skill e pressione Enter"
-        value={draftSkill}
-      />
-      <FieldDescription>
-        Digite e pressione Enter para adicionar. Clique no X para remover.
-      </FieldDescription>
     </Field>
   );
 }

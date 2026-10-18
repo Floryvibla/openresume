@@ -11,20 +11,16 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ResumeExperiencePeriod } from "@/features/resume/ui/resume-experience-period";
+import { ResumePeriodFields } from "@/features/resume/ui/resume-period-fields";
 import type { ResumeExperience } from "@/features/resume/types/resume-document";
 
 type Props = {
   experience: ResumeExperience;
-  onChange: (experience: ResumeExperience) => void;
   onRemove: () => void;
+  onUpdate: (partial: Partial<ResumeExperience>) => void;
 };
 
-export function ResumeExperienceItem({ experience, onChange, onRemove }: Props) {
-  function updateExperience(partial: Partial<ResumeExperience>) {
-    onChange({ ...experience, ...partial });
-  }
-
+export function ResumeExperienceItem({ experience, onRemove, onUpdate }: Props) {
   return (
     <FieldGroup className="px-1 pt-2 pb-4">
       <div className="grid gap-4 md:grid-cols-2">
@@ -34,7 +30,7 @@ export function ResumeExperienceItem({ experience, onChange, onRemove }: Props) 
           </FieldLabel>
           <Input
             id={`experience-title-${experience.id}`}
-            onChange={(event) => updateExperience({ title: event.target.value })}
+            onChange={(event) => onUpdate({ title: event.target.value })}
             value={experience.title}
           />
         </Field>
@@ -44,9 +40,7 @@ export function ResumeExperienceItem({ experience, onChange, onRemove }: Props) 
           </FieldLabel>
           <Input
             id={`experience-company-${experience.id}`}
-            onChange={(event) =>
-              updateExperience({ companyName: event.target.value })
-            }
+            onChange={(event) => onUpdate({ companyName: event.target.value })}
             value={experience.companyName}
           />
         </Field>
@@ -57,15 +51,13 @@ export function ResumeExperienceItem({ experience, onChange, onRemove }: Props) 
         </FieldLabel>
         <Input
           id={`experience-location-${experience.id}`}
-          onChange={(event) =>
-            updateExperience({ location: event.target.value })
-          }
+          onChange={(event) => onUpdate({ location: event.target.value })}
           value={experience.location ?? ""}
         />
       </Field>
-      <ResumeExperiencePeriod
+      <ResumePeriodFields
         id={experience.id}
-        onChange={(period) => updateExperience({ period })}
+        onChange={(period) => onUpdate({ period })}
         period={experience.period}
       />
       <Field>
@@ -74,9 +66,7 @@ export function ResumeExperienceItem({ experience, onChange, onRemove }: Props) 
         </FieldLabel>
         <Textarea
           id={`experience-description-${experience.id}`}
-          onChange={(event) =>
-            updateExperience({ description: event.target.value })
-          }
+          onChange={(event) => onUpdate({ description: event.target.value })}
           placeholder={"- Descreva uma responsabilidade\n- Descreva um resultado"}
           rows={4}
           value={experience.description ?? ""}

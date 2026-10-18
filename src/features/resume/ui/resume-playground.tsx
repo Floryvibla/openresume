@@ -11,12 +11,11 @@ import { useLinkedinResumeRefresh } from "@/features/resume/hooks/use-linkedin-r
 import type { ResumeDocument } from "@/features/resume/types/resume-document";
 
 type Props = {
-  initialTitle: string;
   resume: ResumeDocument;
   resumeId?: string;
 };
 
-export function ResumePlayground({ initialTitle, resume, resumeId }: Props) {
+export function ResumePlayground({ resume, resumeId }: Props) {
   const [draftResume, setDraftResume] = useState(resume);
   const {
     value: isEditorOpen,
@@ -32,26 +31,12 @@ export function ResumePlayground({ initialTitle, resume, resumeId }: Props) {
 
   return (
     <section className="flex flex-col items-center gap-6">
-      {/* <Card className="h-fit rounded-[28px] border shadow-none">
-        <CardHeader>
-          <CardTitle>Editor do curriculo</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResumeEditorForm
-            onSaved={setDraftResume}
-            resume={draftResume}
-            resumeId={resumeId}
-            title={initialTitle}
-          />
-        </CardContent>
-      </Card> */}
       <div className="flex w-full flex-col items-center gap-2">
         <ResumeActions
           isRefreshing={isRefreshing}
           onEditClick={openEditor}
           onRefreshClick={handleRefreshClick}
           resume={draftResume}
-          resumeId={resumeId}
         />
         {errorMessage ? (
           <p className="text-sm text-destructive">{errorMessage}</p>
@@ -65,7 +50,6 @@ export function ResumePlayground({ initialTitle, resume, resumeId }: Props) {
         onSaved={setDraftResume}
         resume={draftResume}
         resumeId={resumeId}
-        title={initialTitle}
       />
       <div className="h-[92vh] overflow-y-auto">
         <ResumePreview resume={draftResume} />

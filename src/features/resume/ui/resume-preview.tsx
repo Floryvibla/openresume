@@ -1,7 +1,10 @@
 import { ResumeHeader } from "@/features/resume/ui/resume-header";
 import { buildResumePages } from "@/features/resume/ui/resume-pagination";
 import { ResumeSection } from "@/features/resume/ui/resume-section";
-import { getResumeCopy } from "@/features/resume/ui/resume-copy";
+import {
+  ResumeEducationList,
+  ResumeExperienceList,
+} from "@/features/resume/ui/resume-preview-timeline";
 import { resumeThemeClasses } from "@/features/resume/ui/resume-theme";
 import type { ResumeDocument } from "@/features/resume/types/resume-document";
 
@@ -13,6 +16,9 @@ function renderBlock(
   resume: ResumeDocument,
   block: ReturnType<typeof buildResumePages>[number]["blocks"][number],
 ) {
+  const bulletClassName =
+    "grid list-disc gap-1 pl-5 text-[0.8rem] text-black/85";
+
   if (block.key === "summary" && block.text) {
     return (
       <ResumeSection title={block.title}>
@@ -27,29 +33,7 @@ function renderBlock(
     );
     return (
       <ResumeSection title={block.title}>
-        <div className="flex flex-col gap-4">
-          {items.map((experience) => (
-            <div className="flex flex-col gap-1.5" key={experience.id}>
-              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
-                <h3 className="text-[0.82rem] font-bold text-black">
-                  {experience.title}
-                </h3>
-                <span className="text-[0.76rem] font-semibold text-black/70">
-                  {experience.period}
-                </span>
-              </div>
-              <p className="text-[0.8rem] font-semibold text-black/80">
-                {experience.companyName}
-                {experience.location ? `, ${experience.location}` : ""}
-              </p>
-              {experience.description ? (
-                <p className="text-[0.79rem] leading-6 text-black/85">
-                  {experience.description}
-                </p>
-              ) : null}
-            </div>
-          ))}
-        </div>
+        <ResumeExperienceList items={items} />
       </ResumeSection>
     );
   }
@@ -60,28 +44,7 @@ function renderBlock(
     );
     return (
       <ResumeSection title={block.title}>
-        <div className="flex flex-col gap-3">
-          {items.map((education) => (
-            <div className="flex flex-col gap-1" key={education.id}>
-              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
-                <h3 className="text-[0.82rem] font-bold text-black">
-                  {education.degreeName}
-                </h3>
-                <span className="text-[0.76rem] font-semibold text-black/70">
-                  {education.period}
-                </span>
-              </div>
-              <p className="text-[0.8rem] font-semibold text-black/80">
-                {education.schoolName}
-              </p>
-              {education.fieldOfStudy ? (
-                <p className="text-[0.78rem] text-black/75">
-                  {education.fieldOfStudy}
-                </p>
-              ) : null}
-            </div>
-          ))}
-        </div>
+        <ResumeEducationList items={items} />
       </ResumeSection>
     );
   }
@@ -90,7 +53,7 @@ function renderBlock(
     const items = resume.skills.filter((item) => block.items?.includes(item));
     return (
       <ResumeSection title={block.title}>
-        <ul className="grid list-disc gap-1 pl-5 text-[0.8rem] text-black/85 sm:grid-cols-2">
+        <ul className={`${bulletClassName} sm:grid-cols-2`}>
           {items.map((skill) => (
             <li key={skill}>{skill}</li>
           ))}
@@ -99,29 +62,50 @@ function renderBlock(
     );
   }
 
-  const items = resume.certifications.filter((item) =>
-    block.items?.includes(item.id),
-  );
-  return (
-    <ResumeSection title={block.title}>
-      <ul className="grid list-disc gap-1 pl-5 text-[0.8rem] text-black/85">
-        {items.map((certification) => (
-          <li key={certification.id}>
-            {certification.name}
-            {certification.issuer ? ` · ${certification.issuer}` : ""}
-          </li>
-        ))}
-      </ul>
-    </ResumeSection>
-  );
+  if (block.key === "certifications") {
+    const items = resume.certifications.filter((item) =>
+      block.items?.includes(item.id),
+    );
+    return (
+      <ResumeSection title={block.title}>
+        <ul className={bulletClassName}>
+          {items.map((certification) => (
+            <li key={certification.id}>
+              {certification.name}
+              {certification.issuer ? ` · ${certification.issuer}` : ""}
+            </li>
+          ))}
+        </ul>
+      </ResumeSection>
+    );
+  }
+
+  if (block.key === "languages") {
+    const items = resume.languages.filter((item) =>
+      block.items?.includes(item.id),
+    );
+    return (
+      <ResumeSection title={block.title}>
+        <ul className={bulletClassName}>
+          {items.map((language) => (
+            <li key={language.id}>
+              {language.name}
+              {language.proficiency ? ` · ${language.proficiency}` : ""}
+            </li>
+          ))}
+        </ul>
+      </ResumeSection>
+    );
+  }
+
+  return null;
 }
 
 export function ResumePreview({ resume }: Props) {
   const pages = buildResumePages(resume);
-  const copy = getResumeCopy(resume.language);
 
   return (
-    <section className="flex flex-col items-center gap-6 sm:px-6 h-full">
+    <section className="flex h-full flex-col items-center gap-6 sm:px-6">
       {pages.map((page) => (
         <article
           className={`w-full max-w-198.5 bg-white px-[7%] py-[8%] text-black shadow-[0_18px_45px_rgba(0,0,0,0.08)] ${resumeThemeClasses[resume.theme]}`}

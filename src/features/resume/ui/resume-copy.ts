@@ -4,6 +4,7 @@ type ResumeCopy = {
   certifications: string;
   education: string;
   experience: string;
+  languages: string;
   page: string;
   pages: string;
   skills: string;
@@ -15,6 +16,7 @@ const copyByLanguage: Record<ResumeLanguageKey, ResumeCopy> = {
     certifications: "Certificações",
     education: "Formação",
     experience: "Experiência",
+    languages: "Idiomas",
     page: "Página",
     pages: "páginas",
     skills: "Skills",
@@ -24,6 +26,7 @@ const copyByLanguage: Record<ResumeLanguageKey, ResumeCopy> = {
     certifications: "Certifications",
     education: "Education",
     experience: "Work experience",
+    languages: "Languages",
     page: "Page",
     pages: "pages",
     skills: "Skills",
@@ -33,6 +36,7 @@ const copyByLanguage: Record<ResumeLanguageKey, ResumeCopy> = {
     certifications: "Certifications",
     education: "Formation",
     experience: "Expérience",
+    languages: "Langues",
     page: "Page",
     pages: "pages",
     skills: "Compétences",

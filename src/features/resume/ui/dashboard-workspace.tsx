@@ -63,7 +63,6 @@ export function DashboardWorkspace({ initialResumeId }: Props) {
         <ShareResumeDialog resumeId={activeResume.id} resumeSlug={activeResume.resumeSlug} />
       </div>
       <ResumePlayground
-        initialTitle={activeResume.title}
         key={activeResume.id}
         resume={activeResume.documentJson}
         resumeId={activeResume.id}

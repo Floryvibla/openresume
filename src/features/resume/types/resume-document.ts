@@ -31,6 +31,12 @@ const resumeCertificationSchema = z.object({
   period: z.string(),
 });
 
+const resumeSpokenLanguageSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  proficiency: z.string().default(""),
+});
+
 export const resumeDocumentSchema = z.object({
   basics: z.object({
     fullName: z.string(),
@@ -51,6 +57,7 @@ export const resumeDocumentSchema = z.object({
       education: z.boolean().default(true),
       skills: z.boolean().default(true),
       certifications: z.boolean().default(true),
+      languages: z.boolean().default(true),
     })
     .default({
       summary: true,
@@ -58,12 +65,14 @@ export const resumeDocumentSchema = z.object({
       education: true,
       skills: true,
       certifications: true,
+      languages: true,
     }),
   generatedAt: resumeDateSchema,
   experiences: z.array(resumeExperienceSchema),
   skills: z.array(z.string()),
   education: z.array(resumeEducationSchema),
   certifications: z.array(resumeCertificationSchema),
+  languages: z.array(resumeSpokenLanguageSchema).default([]),
 });
 
 export type ResumeThemeKey = (typeof resumeThemeKeys)[number];
@@ -72,3 +81,4 @@ export type ResumeDocument = z.infer<typeof resumeDocumentSchema>;
 export type ResumeExperience = z.infer<typeof resumeExperienceSchema>;
 export type ResumeEducation = z.infer<typeof resumeEducationSchema>;
 export type ResumeCertification = z.infer<typeof resumeCertificationSchema>;
+export type ResumeSpokenLanguage = z.infer<typeof resumeSpokenLanguageSchema>;

@@ -39,7 +39,7 @@ export default async function ResumePage({ searchParams }: ResumePageProps) {
 
   return (
     <main className="page-shell">
-      <ResumePlayground initialTitle={resume.basics.fullName} resume={resume} />
+      <ResumePlayground resume={resume} />
     </main>
   );
 }
