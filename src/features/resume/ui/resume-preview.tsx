@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { ResumeHeader } from "@/features/resume/ui/resume-header";
 import { buildResumePages } from "@/features/resume/ui/resume-pagination";
 import { ResumeSection } from "@/features/resume/ui/resume-section";
@@ -18,12 +20,16 @@ function renderBlock(
 ) {
   const bulletClassName =
     "grid list-disc gap-1 pl-5 text-[0.8rem] text-black/85";
+  const renderSection = (children: ReactNode) =>
+    block.isContinuation ? (
+      children
+    ) : (
+      <ResumeSection title={block.title}>{children}</ResumeSection>
+    );
 
   if (block.key === "summary" && block.text) {
-    return (
-      <ResumeSection title={block.title}>
-        <p className="text-[0.8rem] leading-6 text-black/85">{block.text}</p>
-      </ResumeSection>
+    return renderSection(
+      <p className="text-[0.8rem] leading-6 text-black/85">{block.text}</p>,
     );
   }
 
@@ -31,34 +37,24 @@ function renderBlock(
     const items = resume.experiences.filter((item) =>
       block.items?.includes(item.id),
     );
-    return (
-      <ResumeSection title={block.title}>
-        <ResumeExperienceList items={items} />
-      </ResumeSection>
-    );
+    return renderSection(<ResumeExperienceList items={items} />);
   }
 
   if (block.key === "education") {
     const items = resume.education.filter((item) =>
       block.items?.includes(item.id),
     );
-    return (
-      <ResumeSection title={block.title}>
-        <ResumeEducationList items={items} />
-      </ResumeSection>
-    );
+    return renderSection(<ResumeEducationList items={items} />);
   }
 
   if (block.key === "skills") {
     const items = resume.skills.filter((item) => block.items?.includes(item));
-    return (
-      <ResumeSection title={block.title}>
-        <ul className={`${bulletClassName} sm:grid-cols-2`}>
-          {items.map((skill) => (
-            <li key={skill}>{skill}</li>
-          ))}
-        </ul>
-      </ResumeSection>
+    return renderSection(
+      <ul className={`${bulletClassName} sm:grid-cols-2`}>
+        {items.map((skill) => (
+          <li key={skill}>{skill}</li>
+        ))}
+      </ul>,
     );
   }
 
@@ -66,17 +62,15 @@ function renderBlock(
     const items = resume.certifications.filter((item) =>
       block.items?.includes(item.id),
     );
-    return (
-      <ResumeSection title={block.title}>
-        <ul className={bulletClassName}>
-          {items.map((certification) => (
-            <li key={certification.id}>
-              {certification.name}
-              {certification.issuer ? ` · ${certification.issuer}` : ""}
-            </li>
-          ))}
-        </ul>
-      </ResumeSection>
+    return renderSection(
+      <ul className={bulletClassName}>
+        {items.map((certification) => (
+          <li key={certification.id}>
+            {certification.name}
+            {certification.issuer ? ` · ${certification.issuer}` : ""}
+          </li>
+        ))}
+      </ul>,
     );
   }
 
@@ -84,17 +78,15 @@ function renderBlock(
     const items = resume.languages.filter((item) =>
       block.items?.includes(item.id),
     );
-    return (
-      <ResumeSection title={block.title}>
-        <ul className={bulletClassName}>
-          {items.map((language) => (
-            <li key={language.id}>
-              {language.name}
-              {language.proficiency ? ` · ${language.proficiency}` : ""}
-            </li>
-          ))}
-        </ul>
-      </ResumeSection>
+    return renderSection(
+      <ul className={bulletClassName}>
+        {items.map((language) => (
+          <li key={language.id}>
+            {language.name}
+            {language.proficiency ? ` · ${language.proficiency}` : ""}
+          </li>
+        ))}
+      </ul>,
     );
   }
 

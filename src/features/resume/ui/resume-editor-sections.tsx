@@ -28,7 +28,9 @@ export function ResumeEditorSections({ onChange, resume }: Props) {
     });
   }
 
-  function visibilityProps(sectionKey: keyof ResumeDocument["visibleSections"]) {
+  function visibilityProps(
+    sectionKey: keyof ResumeDocument["visibleSections"],
+  ) {
     return {
       isVisible: resume.visibleSections[sectionKey],
       onVisibilityChange: (isVisible: boolean) =>
@@ -38,7 +40,10 @@ export function ResumeEditorSections({ onChange, resume }: Props) {
 
   return (
     <Accordion className="rounded-lg border px-4">
-      <ResumeSectionAccordion title={copy.summary} {...visibilityProps("summary")}>
+      <ResumeSectionAccordion
+        title={copy.summary}
+        {...visibilityProps("summary")}
+      >
         <Textarea
           id="resume-summary"
           onChange={(event) => onChange({ summary: event.target.value })}
@@ -46,7 +51,10 @@ export function ResumeEditorSections({ onChange, resume }: Props) {
           value={resume.summary}
         />
       </ResumeSectionAccordion>
-      <ResumeSectionAccordion title={copy.skills} {...visibilityProps("skills")}>
+      <ResumeSectionAccordion
+        title={copy.skills}
+        {...visibilityProps("skills")}
+      >
         <ResumeSkillsInput
           onChange={(skills) => onChange({ skills })}
           value={resume.skills}
@@ -61,7 +69,10 @@ export function ResumeEditorSections({ onChange, resume }: Props) {
           onChange={(experiences) => onChange({ experiences })}
         />
       </ResumeSectionAccordion>
-      <ResumeSectionAccordion title={copy.education} {...visibilityProps("education")}>
+      <ResumeSectionAccordion
+        title={copy.education}
+        {...visibilityProps("education")}
+      >
         <ResumeEducationAccordion
           education={resume.education}
           onChange={(education) => onChange({ education })}
@@ -76,7 +87,10 @@ export function ResumeEditorSections({ onChange, resume }: Props) {
           onChange={(certifications) => onChange({ certifications })}
         />
       </ResumeSectionAccordion>
-      <ResumeSectionAccordion title={copy.languages} {...visibilityProps("languages")}>
+      <ResumeSectionAccordion
+        title={copy.languages}
+        {...visibilityProps("languages")}
+      >
         <ResumeSpokenLanguageAccordion
           languages={resume.languages}
           onChange={(languages) => onChange({ languages })}

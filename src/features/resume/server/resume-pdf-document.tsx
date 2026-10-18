@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 import { buildResumePages } from "@/features/resume/ui/resume-pagination";
@@ -28,20 +30,22 @@ type Props = {
 };
 
 function renderBlock(resume: ResumeDocument, block: ReturnType<typeof buildResumePages>[number]["blocks"][number]) {
-  if (block.key === "summary" && block.text) {
-    return (
+  const renderSection = (children: ReactNode) =>
+    block.isContinuation ? <View>{children}</View> : (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{block.title}</Text>
-        <Text style={styles.text}>{block.text}</Text>
+        {children}
       </View>
     );
+
+  if (block.key === "summary" && block.text) {
+    return renderSection(<Text style={styles.text}>{block.text}</Text>);
   }
 
   if (block.key === "experiences") {
     const items = resume.experiences.filter((item) => block.items?.includes(item.id));
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{block.title}</Text>
+    return renderSection(
+      <>
         {items.map((experience) => (
           <View key={experience.id} style={styles.item}>
             <View style={styles.row}>
@@ -55,15 +59,14 @@ function renderBlock(resume: ResumeDocument, block: ReturnType<typeof buildResum
             {experience.description ? <Text style={styles.text}>{experience.description}</Text> : null}
           </View>
         ))}
-      </View>
+      </>,
     );
   }
 
   if (block.key === "education") {
     const items = resume.education.filter((item) => block.items?.includes(item.id));
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{block.title}</Text>
+    return renderSection(
+      <>
         {items.map((education) => (
           <View key={education.id} style={styles.item}>
             <View style={styles.row}>
@@ -74,33 +77,45 @@ function renderBlock(resume: ResumeDocument, block: ReturnType<typeof buildResum
             {education.fieldOfStudy ? <Text style={styles.location}>{education.fieldOfStudy}</Text> : null}
           </View>
         ))}
-      </View>
+      </>,
     );
   }
 
   if (block.key === "skills") {
     const items = resume.skills.filter((item) => block.items?.includes(item));
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{block.title}</Text>
+    return renderSection(
+      <>
         {items.map((skill) => (
           <Text key={skill} style={styles.skill}>• {skill}</Text>
         ))}
-      </View>
+      </>,
     );
   }
 
-  const items = resume.certifications.filter((item) => block.items?.includes(item.id));
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{block.title}</Text>
-      {items.map((certification) => (
-        <Text key={certification.id} style={styles.certification}>
-          • {certification.name}
-          {certification.issuer ? ` · ${certification.issuer}` : ""}
+  if (block.key === "certifications") {
+    const items = resume.certifications.filter((item) => block.items?.includes(item.id));
+    return renderSection(
+      <>
+        {items.map((certification) => (
+          <Text key={certification.id} style={styles.certification}>
+            • {certification.name}
+            {certification.issuer ? ` · ${certification.issuer}` : ""}
+          </Text>
+        ))}
+      </>,
+    );
+  }
+
+  const items = resume.languages.filter((item) => block.items?.includes(item.id));
+  return renderSection(
+    <>
+      {items.map((language) => (
+        <Text key={language.id} style={styles.certification}>
+          • {language.name}
+          {language.proficiency ? ` · ${language.proficiency}` : ""}
         </Text>
       ))}
-    </View>
+    </>,
   );
 }
 

@@ -3,6 +3,7 @@ import { getResumeCopy } from "@/features/resume/ui/resume-copy";
 
 type ResumePageBlock = {
   items?: string[];
+  isContinuation?: boolean;
   key:
     | "summary"
     | "experiences"
@@ -58,7 +59,10 @@ export function buildResumePages(resume: ResumeDocument) {
   }
 
   function pushBlock(block: ResumePageBlock, blockCost: number) {
-    if (usedCapacity + blockCost > pageCapacity && pages.at(-1)?.blocks.length) {
+    if (
+      usedCapacity + blockCost > pageCapacity &&
+      pages.at(-1)?.blocks.length
+    ) {
       startNewPage();
     }
 
@@ -80,10 +84,14 @@ export function buildResumePages(resume: ResumeDocument) {
     getItemKey: (item: TItem) => string;
   }) {
     const pendingItems = [...items];
+    let isContinuation = false;
 
     while (pendingItems.length) {
       const itemCosts = pendingItems.map(getItemCost);
-      const chunkCount = getListChunkCount(pageCapacity - usedCapacity, itemCosts);
+      const chunkCount = getListChunkCount(
+        pageCapacity - usedCapacity,
+        itemCosts,
+      );
 
       if (!chunkCount && pages.at(-1)?.blocks.length) {
         startNewPage();
@@ -92,20 +100,33 @@ export function buildResumePages(resume: ResumeDocument) {
 
       const safeChunkCount = Math.max(chunkCount, 1);
       const chunk = pendingItems.splice(0, safeChunkCount);
-      const blockCost = sectionCost + itemCosts.slice(0, safeChunkCount).reduce((sum, cost) => sum + cost, 0);
-      pushBlock({ items: chunk.map(getItemKey), key, title }, blockCost);
+      const blockCost =
+        sectionCost +
+        itemCosts.slice(0, safeChunkCount).reduce((sum, cost) => sum + cost, 0);
+      pushBlock(
+        { isContinuation, items: chunk.map(getItemKey), key, title },
+        blockCost,
+      );
+      isContinuation = true;
     }
   }
 
   if (resume.visibleSections.summary && resume.summary.trim()) {
     const summaryCost = 10 + getTextCost(resume.summary, 72);
-    pushBlock({ key: "summary", text: resume.summary, title: copy.summary }, summaryCost);
+    pushBlock(
+      { key: "summary", text: resume.summary, title: copy.summary },
+      summaryCost,
+    );
   }
 
   if (resume.visibleSections.experiences && resume.experiences.length) {
     pushListBlocks({
       getItemCost: (item) =>
-        getExperienceCost([item.title, item.companyName, item.location, item.description].filter(Boolean).join(" ")),
+        getExperienceCost(
+          [item.title, item.companyName, item.location, item.description]
+            .filter(Boolean)
+            .join(" "),
+        ),
       getItemKey: (item) => item.id,
       items: resume.experiences,
       key: "experiences",
@@ -115,7 +136,14 @@ export function buildResumePages(resume: ResumeDocument) {
 
   if (resume.visibleSections.education && resume.education.length) {
     pushListBlocks({
-      getItemCost: (item) => 6 + getTextCost([item.degreeName, item.schoolName, item.fieldOfStudy].filter(Boolean).join(" "), 80),
+      getItemCost: (item) =>
+        6 +
+        getTextCost(
+          [item.degreeName, item.schoolName, item.fieldOfStudy]
+            .filter(Boolean)
+            .join(" "),
+          80,
+        ),
       getItemKey: (item) => item.id,
       items: resume.education,
       key: "education",
@@ -135,7 +163,8 @@ export function buildResumePages(resume: ResumeDocument) {
 
   if (resume.visibleSections.certifications && resume.certifications.length) {
     pushListBlocks({
-      getItemCost: (item) => 5 + getTextCost([item.name, item.issuer].filter(Boolean).join(" "), 85),
+      getItemCost: (item) =>
+        5 + getTextCost([item.name, item.issuer].filter(Boolean).join(" "), 85),
       getItemKey: (item) => item.id,
       items: resume.certifications,
       key: "certifications",
@@ -145,7 +174,12 @@ export function buildResumePages(resume: ResumeDocument) {
 
   if (resume.visibleSections.languages && resume.languages.length) {
     pushListBlocks({
-      getItemCost: (item) => 5 + getTextCost([item.name, item.proficiency].filter(Boolean).join(" "), 85),
+      getItemCost: (item) =>
+        5 +
+        getTextCost(
+          [item.name, item.proficiency].filter(Boolean).join(" "),
+          85,
+        ),
       getItemKey: (item) => item.id,
       items: resume.languages,
       key: "languages",
