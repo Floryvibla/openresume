@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useBoolean } from "usehooks-ts";
+
 import { ResumeActions } from "@/features/resume/ui/resume-actions";
-import { ResumeEditorForm } from "@/features/resume/ui/resume-editor-form";
+import { ResumeEditorSheet } from "@/features/resume/ui/resume-editor-sheet";
 import { ResumePreview } from "@/features/resume/ui/resume-preview";
+import { useLinkedinResumeRefresh } from "@/features/resume/hooks/use-linkedin-resume-refresh";
 import type { ResumeDocument } from "@/features/resume/types/resume-document";
 
 type Props = {
@@ -16,6 +18,17 @@ type Props = {
 
 export function ResumePlayground({ initialTitle, resume, resumeId }: Props) {
   const [draftResume, setDraftResume] = useState(resume);
+  const {
+    value: isEditorOpen,
+    setFalse: closeEditor,
+    setTrue: openEditor,
+  } = useBoolean(false);
+  const { errorMessage, isRefreshing, refreshFromLinkedin } =
+    useLinkedinResumeRefresh(setDraftResume);
+
+  function handleRefreshClick() {
+    void refreshFromLinkedin(draftResume.basics.publicIdentifier);
+  }
 
   return (
     <section className="flex flex-col items-center gap-6">
@@ -32,7 +45,28 @@ export function ResumePlayground({ initialTitle, resume, resumeId }: Props) {
           />
         </CardContent>
       </Card> */}
-      <ResumeActions resume={draftResume} resumeId={resumeId} />
+      <div className="flex w-full flex-col items-center gap-2">
+        <ResumeActions
+          isRefreshing={isRefreshing}
+          onEditClick={openEditor}
+          onRefreshClick={handleRefreshClick}
+          resume={draftResume}
+          resumeId={resumeId}
+        />
+        {errorMessage ? (
+          <p className="text-sm text-destructive">{errorMessage}</p>
+        ) : null}
+      </div>
+      <ResumeEditorSheet
+        isOpen={isEditorOpen}
+        onOpenChange={(nextIsOpen) =>
+          nextIsOpen ? openEditor() : closeEditor()
+        }
+        onSaved={setDraftResume}
+        resume={draftResume}
+        resumeId={resumeId}
+        title={initialTitle}
+      />
       <div className="h-[92vh] overflow-y-auto">
         <ResumePreview resume={draftResume} />
       </div>
