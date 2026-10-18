@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const resumeThemeKeys = ["olive", "forest", "sand"] as const;
+export const resumeThemeKeys = ["basic", "forest", "sand"] as const;
 export const resumeLanguageKeys = ["pt-BR", "en", "fr"] as const;
 
 const resumeDateSchema = z.object({
@@ -43,20 +43,22 @@ export const resumeDocumentSchema = z.object({
   }),
   summary: z.string(),
   language: z.enum(resumeLanguageKeys).default("pt-BR"),
-  theme: z.enum(resumeThemeKeys).default("olive"),
-  visibleSections: z.object({
-    summary: z.boolean().default(true),
-    experiences: z.boolean().default(true),
-    education: z.boolean().default(true),
-    skills: z.boolean().default(true),
-    certifications: z.boolean().default(true),
-  }).default({
-    summary: true,
-    experiences: true,
-    education: true,
-    skills: true,
-    certifications: true,
-  }),
+  theme: z.enum(resumeThemeKeys).default("basic"),
+  visibleSections: z
+    .object({
+      summary: z.boolean().default(true),
+      experiences: z.boolean().default(true),
+      education: z.boolean().default(true),
+      skills: z.boolean().default(true),
+      certifications: z.boolean().default(true),
+    })
+    .default({
+      summary: true,
+      experiences: true,
+      education: true,
+      skills: true,
+      certifications: true,
+    }),
   generatedAt: resumeDateSchema,
   experiences: z.array(resumeExperienceSchema),
   skills: z.array(z.string()),

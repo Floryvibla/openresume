@@ -39,12 +39,6 @@ export default async function ResumePage({ searchParams }: ResumePageProps) {
 
   return (
     <main className="page-shell">
-      <section className="flex flex-col gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">Preview do curriculo</h1>
-        <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-          Revise o documento gerado, edite o conteudo e depois baixe o PDF ou salve no workspace.
-        </p>
-      </section>
       <ResumePlayground initialTitle={resume.basics.fullName} resume={resume} />
     </main>
   );

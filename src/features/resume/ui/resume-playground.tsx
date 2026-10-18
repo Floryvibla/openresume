@@ -18,8 +18,8 @@ export function ResumePlayground({ initialTitle, resume, resumeId }: Props) {
   const [draftResume, setDraftResume] = useState(resume);
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-      <Card className="h-fit rounded-[28px] border shadow-none">
+    <section className="flex flex-col items-center gap-6">
+      {/* <Card className="h-fit rounded-[28px] border shadow-none">
         <CardHeader>
           <CardTitle>Editor do curriculo</CardTitle>
         </CardHeader>
@@ -31,15 +31,9 @@ export function ResumePlayground({ initialTitle, resume, resumeId }: Props) {
             title={initialTitle}
           />
         </CardContent>
-      </Card>
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold tracking-tight">Preview A4</h2>
-          <p className="text-sm leading-7 text-muted-foreground">
-            Papel A4 em miniatura, centralizado e responsivo. O total de paginas aparece acima da visualizacao.
-          </p>
-        </div>
-        <ResumeActions resume={draftResume} resumeId={resumeId} />
+      </Card> */}
+      <ResumeActions resume={draftResume} resumeId={resumeId} />
+      <div className="h-[92vh] overflow-y-auto">
         <ResumePreview resume={draftResume} />
       </div>
     </section>

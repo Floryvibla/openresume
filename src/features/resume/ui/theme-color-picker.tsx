@@ -1,10 +1,13 @@
 "use client";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { resumeThemeKeys, type ResumeThemeKey } from "@/features/resume/types/resume-document";
+import {
+  resumeThemeKeys,
+  type ResumeThemeKey,
+} from "@/features/resume/types/resume-document";
 
 const labels: Record<ResumeThemeKey, string> = {
-  olive: "Olive",
+  basic: "Basic",
   forest: "Forest",
   sand: "Sand",
 };

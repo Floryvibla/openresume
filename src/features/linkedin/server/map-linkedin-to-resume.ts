@@ -17,7 +17,9 @@ function formatDatePart(part?: LinkedinPeriodDatePart) {
     return null;
   }
 
-  const monthLabel = part.month ? `${String(part.month).padStart(2, "0")}/` : "";
+  const monthLabel = part.month
+    ? `${String(part.month).padStart(2, "0")}/`
+    : "";
   return `${monthLabel}${part.year}`;
 }
 
@@ -51,7 +53,8 @@ function mapExperiences(
     (group.positions ?? []).map((position) => ({
       id: randomUUID(),
       title: position.title ?? "Cargo nao informado",
-      companyName: position.companyName ?? group.companyName ?? "Empresa nao informada",
+      companyName:
+        position.companyName ?? group.companyName ?? "Empresa nao informada",
       location: position.locationName ?? null,
       description: position.description ?? null,
       period: formatPeriod(position.timePeriod ?? group.timePeriod),
@@ -61,7 +64,7 @@ function mapExperiences(
 
 export function mapLinkedinToResume(
   importedProfile: ImportedLinkedinProfile,
-  theme: ResumeThemeKey = "olive",
+  theme: ResumeThemeKey = "basic",
 ): ResumeDocument {
   const resumeDocument = {
     basics: {

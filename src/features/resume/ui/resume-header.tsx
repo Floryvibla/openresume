@@ -14,11 +14,11 @@ export function ResumeHeader({ resume }: Props) {
 
   return (
     <header className="flex flex-col gap-3 border-b border-black/35 pb-5 text-center">
-      <h1 className="text-[1.9rem] font-black uppercase tracking-[0.03em] text-black">
+      <h1 className="text-3xl font-black uppercase text-black">
         {resume.basics.fullName}
       </h1>
-      <p className="resume-accent text-[0.95rem] font-semibold">{resume.basics.headline}</p>
-      <p className="text-[0.78rem] text-black/75">{contactItems.join(" | ")}</p>
+      <p className="resume-accent font-semibold">{resume.basics.headline}</p>
+      <p className="text-[0.78rem] text-gray-700">{contactItems.join(" | ")}</p>
     </header>
   );
 }

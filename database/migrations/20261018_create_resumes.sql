@@ -6,7 +6,7 @@ create table if not exists resumes (
   title text not null,
   resume_slug text not null unique,
   document_json jsonb not null,
-  theme_key text not null default 'olive',
+  theme_key text not null default 'basic',
   is_public boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
