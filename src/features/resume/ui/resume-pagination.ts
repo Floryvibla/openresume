@@ -20,17 +20,23 @@ export type ResumePage = {
 };
 
 const pageCapacity = 100;
+const headerCost = 18;
+const sectionCost = 8;
+
+function getTextCost(text: string, charsPerLine: number) {
+  return Math.max(1, Math.ceil(text.trim().length / charsPerLine));
+}
 
 function getExperienceCost(text: string) {
-  return 15 + Math.ceil(text.length / 150) * 4;
+  return 7 + getTextCost(text, 80);
 }
 
 function getListChunkCount(remainingSpace: number, itemCosts: number[]) {
-  let consumedSpace = 10;
+  let consumedSpace = sectionCost;
   let chunkCount = 0;
 
   for (const itemCost of itemCosts) {
-    if (consumedSpace + itemCost > remainingSpace && chunkCount > 0) {
+    if (consumedSpace + itemCost > remainingSpace) {
       break;
     }
 
@@ -38,77 +44,113 @@ function getListChunkCount(remainingSpace: number, itemCosts: number[]) {
     chunkCount += 1;
   }
 
-  return Math.max(chunkCount, 1);
+  return chunkCount;
 }
 
 export function buildResumePages(resume: ResumeDocument) {
   const copy = getResumeCopy(resume.language);
   const pages: ResumePage[] = [{ blocks: [], pageNumber: 1 }];
-  let usedCapacity = 24;
+  let usedCapacity = headerCost;
+
+  function startNewPage() {
+    pages.push({ blocks: [], pageNumber: pages.length + 1 });
+    usedCapacity = 0;
+  }
 
   function pushBlock(block: ResumePageBlock, blockCost: number) {
     if (usedCapacity + blockCost > pageCapacity && pages.at(-1)?.blocks.length) {
-      pages.push({ blocks: [], pageNumber: pages.length + 1 });
-      usedCapacity = 0;
+      startNewPage();
     }
 
     pages.at(-1)?.blocks.push(block);
     usedCapacity += blockCost;
   }
 
+  function pushListBlocks<TItem>({
+    items,
+    key,
+    title,
+    getItemCost,
+    getItemKey,
+  }: {
+    items: TItem[];
+    key: ResumePageBlock["key"];
+    title: string;
+    getItemCost: (item: TItem) => number;
+    getItemKey: (item: TItem) => string;
+  }) {
+    const pendingItems = [...items];
+
+    while (pendingItems.length) {
+      const itemCosts = pendingItems.map(getItemCost);
+      const chunkCount = getListChunkCount(pageCapacity - usedCapacity, itemCosts);
+
+      if (!chunkCount && pages.at(-1)?.blocks.length) {
+        startNewPage();
+        continue;
+      }
+
+      const safeChunkCount = Math.max(chunkCount, 1);
+      const chunk = pendingItems.splice(0, safeChunkCount);
+      const blockCost = sectionCost + itemCosts.slice(0, safeChunkCount).reduce((sum, cost) => sum + cost, 0);
+      pushBlock({ items: chunk.map(getItemKey), key, title }, blockCost);
+    }
+  }
+
   if (resume.visibleSections.summary && resume.summary.trim()) {
-    const summaryCost = 16 + Math.ceil(resume.summary.length / 240) * 7;
+    const summaryCost = 10 + getTextCost(resume.summary, 72);
     pushBlock({ key: "summary", text: resume.summary, title: copy.summary }, summaryCost);
   }
 
   if (resume.visibleSections.experiences && resume.experiences.length) {
-    const pendingItems = [...resume.experiences];
-
-    while (pendingItems.length) {
-      const itemCosts = pendingItems.map((item) =>
-        getExperienceCost([item.title, item.companyName, item.description].filter(Boolean).join(" ")),
-      );
-      const chunkCount = getListChunkCount(pageCapacity - usedCapacity, itemCosts);
-      const chunk = pendingItems.splice(0, chunkCount);
-      const blockCost = 12 + itemCosts.slice(0, chunkCount).reduce((sum, cost) => sum + cost, 0);
-      pushBlock({
-        items: chunk.map((item) => item.id),
-        key: "experiences",
-        title: copy.experience,
-      }, blockCost);
-    }
+    pushListBlocks({
+      getItemCost: (item) =>
+        getExperienceCost([item.title, item.companyName, item.location, item.description].filter(Boolean).join(" ")),
+      getItemKey: (item) => item.id,
+      items: resume.experiences,
+      key: "experiences",
+      title: copy.experience,
+    });
   }
 
   if (resume.visibleSections.education && resume.education.length) {
-    const cost = 14 + resume.education.length * 12;
-    pushBlock({
-      items: resume.education.map((item) => item.id),
+    pushListBlocks({
+      getItemCost: (item) => 6 + getTextCost([item.degreeName, item.schoolName, item.fieldOfStudy].filter(Boolean).join(" "), 80),
+      getItemKey: (item) => item.id,
+      items: resume.education,
       key: "education",
       title: copy.education,
-    }, cost);
+    });
   }
 
   if (resume.visibleSections.skills && resume.skills.length) {
-    const cost = 14 + Math.ceil(resume.skills.length / 6) * 10;
-    pushBlock({ items: resume.skills, key: "skills", title: copy.skills }, cost);
+    pushListBlocks({
+      getItemCost: () => 1,
+      getItemKey: (item) => item,
+      items: resume.skills,
+      key: "skills",
+      title: copy.skills,
+    });
   }
 
   if (resume.visibleSections.certifications && resume.certifications.length) {
-    const cost = 14 + resume.certifications.length * 10;
-    pushBlock({
-      items: resume.certifications.map((item) => item.id),
+    pushListBlocks({
+      getItemCost: (item) => 5 + getTextCost([item.name, item.issuer].filter(Boolean).join(" "), 85),
+      getItemKey: (item) => item.id,
+      items: resume.certifications,
       key: "certifications",
       title: copy.certifications,
-    }, cost);
+    });
   }
 
   if (resume.visibleSections.languages && resume.languages.length) {
-    const cost = 14 + resume.languages.length * 8;
-    pushBlock({
-      items: resume.languages.map((item) => item.id),
+    pushListBlocks({
+      getItemCost: (item) => 5 + getTextCost([item.name, item.proficiency].filter(Boolean).join(" "), 85),
+      getItemKey: (item) => item.id,
+      items: resume.languages,
       key: "languages",
       title: copy.languages,
-    }, cost);
+    });
   }
 
   return pages;
