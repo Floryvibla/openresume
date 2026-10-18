@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Open Resume
 
-## Getting Started
+Open Resume importa dados do LinkedIn, normaliza o perfil em um schema interno e gera um curriculo profissional otimizado para ATS.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 com App Router
+- TypeScript
+- Tailwind CSS v4
+- shadcn/ui
+- PostgreSQL com `jsonb`
+- `@florydev/linkedin-api-voyager`
+- `@react-pdf/renderer`
+
+## Variaveis de ambiente
+
+Use o arquivo `.env.example` como base:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Variaveis usadas:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `DATABASE_URL`
+- `LINKEDIN_JSESSIONID`
+- `LINKEDIN_LI_AT`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Rodando localmente
 
-## Learn More
+```bash
+pnpm install
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Abra `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Banco de dados
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+As migrations do projeto estao em `database/migrations`.
 
-## Deploy on Vercel
+Arquivos atuais:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `database/migrations/20261018_create_resumes.sql`
+- `database/migrations/20261018_create_public_resume_links.sql`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Fluxo atual
+
+1. Landing page para importar URL publica ou `publicIdentifier` do LinkedIn.
+2. Preview de curriculo ATS em `/resume`.
+3. Salvamento no workspace do navegador atual via cookie de viewer.
+4. Edicao basica do curriculo em `/dashboard`.
+5. Publicacao de link e exportacao em PDF por rota server-side.
+
+## Observacoes
+
+- A Voyager API roda somente no servidor.
+- O fluxo atual nao usa OAuth oficial do LinkedIn.
+- A conta do LinkedIn usada pelos cookies pode expirar ou sofrer rate limit.
+
+## Qualidade
+
+Comandos validados nesta implementacao:
+
+```bash
+pnpm lint
+pnpm build
+```
