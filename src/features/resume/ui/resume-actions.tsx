@@ -1,16 +1,21 @@
 "use client";
 
-import { DownloadIcon, RefreshCwIcon, SquarePenIcon } from "lucide-react";
-import { useBoolean } from "usehooks-ts";
+import {
+  DownloadIcon,
+  HistoryIcon,
+  RefreshCwIcon,
+  SquarePenIcon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { useResumePdfDownload } from "@/features/resume/hooks/use-resume-pdf-download";
 import { type ResumeDocument } from "@/features/resume/types/resume-document";
-import { apiClient } from "@/lib/axios";
 
 type Props = {
   isRefreshing?: boolean;
   onEditClick: () => void;
+  onHistoryClick: () => void;
   onRefreshClick: () => void;
   resume: ResumeDocument;
 };
@@ -18,45 +23,17 @@ type Props = {
 export function ResumeActions({
   isRefreshing = false,
   onEditClick,
+  onHistoryClick,
   onRefreshClick,
   resume,
 }: Props) {
-  const {
-    value: isSaving,
-    setTrue: startSaving,
-    setFalse: stopSaving,
-  } = useBoolean(false);
-  const isBusy = isSaving || isRefreshing;
-
-  async function handleDownload() {
-    startSaving();
-
-    try {
-      const response = await apiClient.post(
-        "/api/resumes/pdf",
-        {
-          documentJson: resume,
-          title: resume.basics.fullName,
-        },
-        {
-          responseType: "blob",
-        },
-      );
-      const downloadUrl = URL.createObjectURL(response.data as Blob);
-      const anchorElement = document.createElement("a");
-      anchorElement.href = downloadUrl;
-      anchorElement.download = `${resume.basics.fullName || "resume"}.pdf`;
-      anchorElement.click();
-      URL.revokeObjectURL(downloadUrl);
-    } finally {
-      stopSaving();
-    }
-  }
+  const { downloadPdf, isDownloading } = useResumePdfDownload(resume);
+  const isBusy = isDownloading || isRefreshing;
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button disabled={isSaving} onClick={handleDownload} type="button">
-        {isSaving ? (
+      <Button disabled={isDownloading} onClick={downloadPdf} type="button">
+        {isDownloading ? (
           <Spinner data-icon="inline-start" />
         ) : (
           <DownloadIcon data-icon="inline-start" />
@@ -84,6 +61,15 @@ export function ResumeActions({
           <RefreshCwIcon data-icon="inline-start" />
         )}
         Atualizar com LinkedIn
+      </Button>
+      <Button
+        disabled={isBusy}
+        onClick={onHistoryClick}
+        type="button"
+        variant="outline"
+      >
+        <HistoryIcon data-icon="inline-start" />
+        Historico
       </Button>
     </div>
   );

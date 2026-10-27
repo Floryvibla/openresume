@@ -2,6 +2,7 @@ import type {
   ResumeEducation,
   ResumeExperience,
 } from "@/features/resume/types/resume-document";
+import { splitResumeBullets } from "@/features/resume/ui/resume-bullets";
 
 type TimelineItemProps = {
   endLabel: string;
@@ -49,9 +50,13 @@ export function ResumeExperienceList({ items }: ExperienceListProps) {
             title={experience.title}
           />
           {experience.description ? (
-            <p className="text-[0.79rem] leading-6 text-black/85">
-              {experience.description}
-            </p>
+            <ul className="grid list-disc gap-1 pl-5 text-[0.79rem] leading-6 text-black/85">
+              {splitResumeBullets(experience.description).map(
+                (bullet, bulletIndex) => (
+                  <li key={`${experience.id}-${bulletIndex}`}>{bullet}</li>
+                ),
+              )}
+            </ul>
           ) : null}
         </div>
       ))}

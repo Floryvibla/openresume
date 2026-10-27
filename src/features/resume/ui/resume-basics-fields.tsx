@@ -34,13 +34,24 @@ export function ResumeBasicsFields({ basics, onBasicsChange }: Props) {
           value={basics.headline}
         />
       </Field>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Field>
           <FieldLabel htmlFor="resume-location">Localizacao</FieldLabel>
           <Input
             id="resume-location"
             onChange={(event) => updateBasics({ location: event.target.value })}
             value={basics.location}
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="resume-linkedin">LinkedIn</FieldLabel>
+          <Input
+            id="resume-linkedin"
+            onChange={(event) =>
+              updateBasics({ publicIdentifier: event.target.value })
+            }
+            placeholder="linkedin.com/in/seu-perfil"
+            value={basics.publicIdentifier}
           />
         </Field>
         <Field>

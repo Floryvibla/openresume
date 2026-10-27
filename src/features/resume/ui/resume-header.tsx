@@ -1,4 +1,5 @@
 import type { ResumeDocument } from "@/features/resume/types/resume-document";
+import { formatLinkedinUrl } from "@/features/resume/ui/resume-linkedin";
 
 type Props = {
   resume: ResumeDocument;
@@ -9,7 +10,7 @@ export function ResumeHeader({ resume }: Props) {
     resume.basics.location,
     resume.basics.email,
     resume.basics.phone,
-    `linkedin.com/in/${resume.basics.publicIdentifier}`,
+    formatLinkedinUrl(resume.basics.publicIdentifier),
   ].filter(Boolean);
 
   return (

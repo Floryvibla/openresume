@@ -1,4 +1,5 @@
 import type { ResumeDocument } from "@/features/resume/types/resume-document";
+import { splitResumeBullets } from "@/features/resume/ui/resume-bullets";
 import { getResumeCopy } from "@/features/resume/ui/resume-copy";
 
 type ResumePageBlock = {
@@ -28,8 +29,19 @@ function getTextCost(text: string, charsPerLine: number) {
   return Math.max(1, Math.ceil(text.trim().length / charsPerLine));
 }
 
-function getExperienceCost(text: string) {
-  return 7 + getTextCost(text, 80);
+function getExperienceCost(experience: ResumeDocument["experiences"][number]) {
+  const headerCost = getTextCost(
+    [experience.title, experience.companyName, experience.location]
+      .filter(Boolean)
+      .join(" "),
+    80,
+  );
+  const descriptionCost = splitResumeBullets(experience.description).reduce(
+    (total, bullet) => total + getTextCost(bullet, 80),
+    0,
+  );
+
+  return 7 + headerCost + descriptionCost;
 }
 
 function getListChunkCount(remainingSpace: number, itemCosts: number[]) {
@@ -121,12 +133,7 @@ export function buildResumePages(resume: ResumeDocument) {
 
   if (resume.visibleSections.experiences && resume.experiences.length) {
     pushListBlocks({
-      getItemCost: (item) =>
-        getExperienceCost(
-          [item.title, item.companyName, item.location, item.description]
-            .filter(Boolean)
-            .join(" "),
-        ),
+      getItemCost: getExperienceCost,
       getItemKey: (item) => item.id,
       items: resume.experiences,
       key: "experiences",

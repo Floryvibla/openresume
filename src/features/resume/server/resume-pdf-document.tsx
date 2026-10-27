@@ -3,9 +3,12 @@ import type { ReactNode } from "react";
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 import { buildResumePages } from "@/features/resume/ui/resume-pagination";
+import { splitResumeBullets } from "@/features/resume/ui/resume-bullets";
+import { formatLinkedinUrl } from "@/features/resume/ui/resume-linkedin";
 import type { ResumeDocument } from "@/features/resume/types/resume-document";
 
 const styles = StyleSheet.create({
+  bullet: { color: "#222222", fontSize: 10, lineHeight: 1.55, marginLeft: 8 },
   certification: { marginBottom: 5 },
   company: { color: "#444444", fontSize: 10, fontWeight: 700 },
   header: { borderBottom: "1 solid #7a7a7a", marginBottom: 18, paddingBottom: 14, textAlign: "center" },
@@ -56,7 +59,11 @@ function renderBlock(resume: ResumeDocument, block: ReturnType<typeof buildResum
               {experience.companyName}
               {experience.location ? `, ${experience.location}` : ""}
             </Text>
-            {experience.description ? <Text style={styles.text}>{experience.description}</Text> : null}
+            {splitResumeBullets(experience.description).map((bullet, bulletIndex) => (
+              <Text key={bulletIndex} style={styles.bullet}>
+                • {bullet}
+              </Text>
+            ))}
           </View>
         ))}
       </>,
@@ -125,7 +132,7 @@ export function ResumePdfDocument({ resume }: Props) {
     resume.basics.location,
     resume.basics.email,
     resume.basics.phone,
-    `linkedin.com/in/${resume.basics.publicIdentifier}`,
+    formatLinkedinUrl(resume.basics.publicIdentifier),
   ].filter(Boolean);
 
   return (
